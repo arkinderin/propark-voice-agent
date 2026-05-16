@@ -1,0 +1,87 @@
+﻿{
+  "name": "Klinik Telefon Asistani",
+  "firstMessage": "Merhaba! Klinik hattına hoş geldiniz. Bu görüşme kayıt altına alınmaktadır. Size nasıl yardımcı olabilirim?",
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "temperature": 0.3,
+    "systemPrompt": "VOICE_AGENT_PROMPT_BURAYA — lib/prompts/voice-agent.ts dosyasındaki içeriği yapıştır"
+  },
+  "voice": {
+    "provider": "11labs",
+    "voiceId": "pNInz6obpgDQGcFmaJgB",
+    "language": "tr"
+  },
+  "transcriber": {
+    "provider": "deepgram",
+    "model": "nova-2",
+    "language": "tr"
+  },
+  "serverUrl": "https://YOUR-DOMAIN.vercel.app/api/vapi",
+  "serverUrlSecret": "VAPI_WEBHOOK_SECRET_ENV_DEGERINI_YAZ",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "check_availability",
+        "description": "Kliniğin müsait randevu saatlerini kontrol eder",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "doctorId": { "type": "string", "description": "Doktor UUID (opsiyonel)" },
+            "startDate": { "type": "string", "format": "date-time", "description": "Başlangıç tarihi ISO 8601" },
+            "endDate": { "type": "string", "format": "date-time", "description": "Bitiş tarihi ISO 8601" }
+          },
+          "required": ["startDate", "endDate"]
+        },
+        "serverUrl": "https://YOUR-DOMAIN.vercel.app/api/vapi/availability"
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "book_appointment",
+        "description": "Randevu oluşturur",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "patientName": { "type": "string", "description": "Hasta adı soyadı" },
+            "phone": { "type": "string", "description": "Telefon numarası +90 ile" },
+            "doctorId": { "type": "string", "description": "Doktor UUID (opsiyonel)" },
+            "serviceId": { "type": "string", "description": "Hizmet UUID (opsiyonel)" },
+            "startAt": { "type": "string", "format": "date-time", "description": "Randevu başlangıç zamanı ISO 8601" },
+            "complaint": { "type": "string", "description": "Hasta şikayeti" }
+          },
+          "required": ["patientName", "phone", "startAt"]
+        },
+        "serverUrl": "https://YOUR-DOMAIN.vercel.app/api/vapi/book"
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "transfer_to_human",
+        "description": "Görüşmeyi sekreter/insana aktarır",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "reason": { "type": "string", "description": "Transfer nedeni" }
+          },
+          "required": ["reason"]
+        },
+        "type": "transferCall",
+        "destinations": [
+          {
+            "type": "number",
+            "number": "CLINIC_EMERGENCY_PHONE_ENV_DEGERI",
+            "message": "Sizi sekretere bağlıyorum, lütfen bekleyin."
+          }
+        ]
+      }
+    }
+  ],
+  "endCallMessage": "Sağlıcakla kalın!",
+  "endCallPhrases": ["güle güle", "hoşça kalın", "tamam teşekkürler", "görüşürüz"],
+  "silenceTimeoutSeconds": 30,
+  "maxDurationSeconds": 600
+}

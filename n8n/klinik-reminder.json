@@ -1,0 +1,94 @@
+﻿{
+  "name": "Klinik - Randevu Hatirlatma",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "klinik-reminder",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.body.type }}",
+              "rightValue": "confirmation",
+              "operator": { "type": "string", "operation": "equals" }
+            }
+          ]
+        }
+      },
+      "id": "is-confirmation",
+      "name": "Onay mi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "recipientPhoneNumber": "={{ $('Webhook').item.json.body.phone }}",
+        "textBody": "Merhaba {{ $('Webhook').item.json.body.patientName }},\n\nRandevunuz olusturuldu!\nTarih: {{ $('Webhook').item.json.body.appointmentAt }}\nDoktor: {{ $('Webhook').item.json.body.doctorName }}\nAdres: {{ $('Webhook').item.json.body.clinicAddress }}\n\nIptal icin bize ulasin.",
+        "additionalOptions": {}
+      },
+      "id": "send-confirmation",
+      "name": "Onay WhatsApp",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [680, 180],
+      "credentials": { "whatsAppApi": { "id": "WHATSAPP_CRED_ID", "name": "WhatsApp" } }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "recipientPhoneNumber": "={{ $('Webhook').item.json.body.phone }}",
+        "textBody": "Merhaba {{ $('Webhook').item.json.body.patientName }},\n\nYarin randevunuz var!\nTarih: {{ $('Webhook').item.json.body.appointmentAt }}\nDoktor: {{ $('Webhook').item.json.body.doctorName }}\nAdres: {{ $('Webhook').item.json.body.clinicAddress }}\n\nGelemeyecekseniz IPTAL yazin.",
+        "additionalOptions": {}
+      },
+      "id": "send-reminder",
+      "name": "Hatirlatma WhatsApp",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [680, 420],
+      "credentials": { "whatsAppApi": { "id": "WHATSAPP_CRED_ID", "name": "WhatsApp" } }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"success\": true }",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Onay mi?", "type": "main", "index": 0 }]] },
+    "Onay mi?": {
+      "main": [
+        [{ "node": "Onay WhatsApp", "type": "main", "index": 0 }],
+        [{ "node": "Hatirlatma WhatsApp", "type": "main", "index": 0 }]
+      ]
+    },
+    "Onay WhatsApp": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] },
+    "Hatirlatma WhatsApp": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "1",
+  "tags": []
+}

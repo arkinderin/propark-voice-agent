@@ -1,0 +1,65 @@
+﻿{
+  "name": "Klinik - 6 Ay Recall Kampanya",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "months", "monthsInterval": 1, "triggerAtDayOfMonth": 1, "triggerAtHour": 10 }]
+        }
+      },
+      "id": "cron-monthly",
+      "name": "Her Ayin 1i",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT a.id, a.patient_name, a.phone, a.appointment_at, d.full_name as doctor_name, s.name as service_name FROM appointments a LEFT JOIN doctors d ON a.doctor_id = d.id LEFT JOIN services s ON a.service_id = s.id WHERE a.status = 'tamamlandi' AND a.appointment_at < NOW() - INTERVAL '6 months' AND a.appointment_at > NOW() - INTERVAL '18 months' AND a.phone NOT IN (SELECT phone FROM recall_exclusions) LIMIT 100",
+        "options": {}
+      },
+      "id": "get-recall",
+      "name": "Recall Hastalari",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [460, 300],
+      "credentials": { "postgres": { "id": "POSTGRES_CRED_ID", "name": "Postgres" } }
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "split-batches",
+      "name": "Her Hasta",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "recipientPhoneNumber": "={{ $json.phone }}",
+        "textBody": "Merhaba {{ $json.patient_name }},\n\nSizi uzun suredir goremediniz! Son ziyaretinizden bu yana 6 ay gecti. Periyodik kontrolunuzu yaptirmak icin randevu alabilirsiniz.\n\nBizi arayin veya online randevu alin. Saglikli gunler dileriz!",
+        "additionalOptions": {}
+      },
+      "id": "send-recall",
+      "name": "Recall WhatsApp",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": { "whatsAppApi": { "id": "WHATSAPP_CRED_ID", "name": "WhatsApp" } }
+    }
+  ],
+  "connections": {
+    "Her Ayin 1i": { "main": [[{ "node": "Recall Hastalari", "type": "main", "index": 0 }]] },
+    "Recall Hastalari": { "main": [[{ "node": "Her Hasta", "type": "main", "index": 0 }]] },
+    "Her Hasta": { "main": [[{ "node": "Recall WhatsApp", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "1",
+  "tags": []
+}

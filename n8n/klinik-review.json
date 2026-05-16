@@ -1,0 +1,80 @@
+﻿{
+  "name": "Klinik - Google Review Istegi",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "hours", "hoursInterval": 24 }]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Her Gun 11:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT a.id, a.patient_name, a.phone, a.appointment_at, d.full_name as doctor_name FROM appointments a LEFT JOIN doctors d ON a.doctor_id = d.id WHERE a.status = 'tamamlandi' AND a.appointment_at < NOW() - INTERVAL '2 days' AND a.review_requested_at IS NULL LIMIT 50",
+        "options": {}
+      },
+      "id": "get-completed",
+      "name": "Tamamlanan Randevular",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [460, 300],
+      "credentials": { "postgres": { "id": "POSTGRES_CRED_ID", "name": "Postgres" } }
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "split-batches",
+      "name": "Her Biri",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "recipientPhoneNumber": "={{ $json.phone }}",
+        "textBody": "Merhaba {{ $json.patient_name }},\n\n{{ $json.doctor_name }} ile randevunuzdan 2 gun gecti. Deneyiminizi paylasir misiniz?\n\nGoogle'da yildiz verin: GOOGLE_REVIEW_LINK_PLACEHOLDER\n\nTesekkurler!",
+        "additionalOptions": {}
+      },
+      "id": "send-review",
+      "name": "Review WhatsApp",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": { "whatsAppApi": { "id": "WHATSAPP_CRED_ID", "name": "WhatsApp" } }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE appointments SET review_requested_at = NOW() WHERE id = '{{ $('Tamamlanan Randevular').item.json.id }}'",
+        "options": {}
+      },
+      "id": "update-review-sent",
+      "name": "review_requested_at Guncelle",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1120, 300],
+      "credentials": { "postgres": { "id": "POSTGRES_CRED_ID", "name": "Postgres" } }
+    }
+  ],
+  "connections": {
+    "Her Gun 11:00": { "main": [[{ "node": "Tamamlanan Randevular", "type": "main", "index": 0 }]] },
+    "Tamamlanan Randevular": { "main": [[{ "node": "Her Biri", "type": "main", "index": 0 }]] },
+    "Her Biri": { "main": [[{ "node": "Review WhatsApp", "type": "main", "index": 0 }]] },
+    "Review WhatsApp": { "main": [[{ "node": "review_requested_at Guncelle", "type": "main", "index": 0 }]] },
+    "review_requested_at Guncelle": { "main": [[{ "node": "Her Biri", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "1",
+  "tags": []
+}
