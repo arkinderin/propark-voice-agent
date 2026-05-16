@@ -16,15 +16,15 @@ async function sendReminders(
       isNull(appointments[reminderField]),
       eq(appointments.status, "onaylandi")
     ),
-    with: { doctorId: true, serviceId: true },
+    with: { doctor: true, service: true },
   });
 
   const results = [];
   for (const appt of upcoming) {
     if (!process.env.N8N_WEBHOOK_REMINDER) break;
 
-    const doctor = appt.doctorId as unknown as { fullName?: string } | null;
-    const service = appt.serviceId as unknown as { name?: string } | null;
+    const doctor = appt.doctor;
+    const service = appt.service;
 
     await fetch(process.env.N8N_WEBHOOK_REMINDER, {
       method: "POST",

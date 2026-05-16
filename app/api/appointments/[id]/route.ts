@@ -42,7 +42,7 @@ export async function GET(
   const { id } = await params;
   const appt = await db.query.appointments.findFirst({
     where: eq(appointments.id, id),
-    with: { doctorId: true, serviceId: true },
+    with: { doctor: true, service: true },
   });
   if (!appt) return Response.json({ error: "Bulunamadı" }, { status: 404 });
   return Response.json(appt);

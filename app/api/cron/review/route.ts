@@ -20,14 +20,14 @@ export async function GET(req: NextRequest) {
       lte(appointments.appointmentAt, twoDaysAgo),
       isNull(appointments.reviewRequestedAt)
     ),
-    with: { doctorId: true },
+    with: { doctor: true },
   });
 
   const results = [];
   for (const appt of completed) {
     if (!process.env.N8N_WEBHOOK_REVIEW) break;
 
-    const doctor = appt.doctorId as unknown as { fullName?: string } | null;
+    const doctor = appt.doctor;
 
     await fetch(process.env.N8N_WEBHOOK_REVIEW, {
       method: "POST",

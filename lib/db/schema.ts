@@ -8,6 +8,7 @@ import {
   boolean,
   index,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 export const doctors = pgTable("doctors", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -111,3 +112,21 @@ export const adminUsers = pgTable("admin_users", {
   name: text("name"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const appointmentsRelations = relations(appointments, ({ one }) => ({
+  doctor: one(doctors, {
+    fields: [appointments.doctorId],
+    references: [doctors.id],
+  }),
+  service: one(services, {
+    fields: [appointments.serviceId],
+    references: [services.id],
+  }),
+}));
+
+export const voiceCallsRelations = relations(voiceCalls, ({ one }) => ({
+  appointment: one(appointments, {
+    fields: [voiceCalls.appointmentId],
+    references: [appointments.id],
+  }),
+}));

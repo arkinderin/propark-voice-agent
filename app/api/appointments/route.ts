@@ -99,7 +99,7 @@ export async function GET(req: NextRequest) {
 
   const rows = await db.query.appointments.findMany({
     where: conditions.length ? and(...conditions) : undefined,
-    with: { doctorId: true, serviceId: true },
+    with: { doctor: true, service: true },
     orderBy: (t, { asc }) => asc(t.appointmentAt),
   });
 
