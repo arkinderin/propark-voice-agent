@@ -3,29 +3,12 @@ import { db } from "@/lib/db";
 import { appointments, doctors, services } from "@/lib/db/schema";
 import { and, gte, lte, isNull, eq } from "drizzle-orm";
 
-export async function GET(req: NextRequest) {
-  const auth = req.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const type = new URL(req.url).searchParams.get("type") ?? "24h";
-  const now = new Date();
-
-  let windowStart: Date;
-  let windowEnd: Date;
-  let reminderField: "reminderSentAt" | "secondReminderSentAt";
-
-  if (type === "2h") {
-    windowStart = new Date(now.getTime() + 1 * 3600000);
-    windowEnd = new Date(now.getTime() + 3 * 3600000);
-    reminderField = "secondReminderSentAt";
-  } else {
-    windowStart = new Date(now.getTime() + 22 * 3600000);
-    windowEnd = new Date(now.getTime() + 26 * 3600000);
-    reminderField = "reminderSentAt";
-  }
-
+async function sendReminders(
+  windowStart: Date,
+  windowEnd: Date,
+  reminderField: "reminderSentAt" | "secondReminderSentAt",
+  type: string
+) {
   const upcoming = await db.query.appointments.findMany({
     where: and(
       gte(appointments.appointmentAt, windowStart),
@@ -47,7 +30,7 @@ export async function GET(req: NextRequest) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        type: type === "2h" ? "reminder_2h" : "reminder_24h",
+        type,
         appointmentId: appt.id,
         patientName: appt.patientName,
         phone: appt.phone,
@@ -65,6 +48,32 @@ export async function GET(req: NextRequest) {
 
     results.push(appt.id);
   }
+  return results;
+}
 
-  return Response.json({ sent: results.length, ids: results });
+export async function GET(req: NextRequest) {
+  const auth = req.headers.get("authorization");
+  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const now = new Date();
+
+  // 24h penceresi: 22-26 saat sonrası randevular
+  const r24 = await sendReminders(
+    new Date(now.getTime() + 22 * 3600000),
+    new Date(now.getTime() + 26 * 3600000),
+    "reminderSentAt",
+    "reminder_24h"
+  );
+
+  // 2h penceresi: 1-3 saat sonrası randevular
+  const r2h = await sendReminders(
+    new Date(now.getTime() + 1 * 3600000),
+    new Date(now.getTime() + 3 * 3600000),
+    "secondReminderSentAt",
+    "reminder_2h"
+  );
+
+  return Response.json({ "24h": r24.length, "2h": r2h.length });
 }
