@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { appointments, doctors, services } from "@/lib/db/schema";
 import { and, gte, lte, eq, sql } from "drizzle-orm";
+import { getDefaultClinic } from "@/lib/clinic";
 
 const CreateSchema = z.object({
   patientName: z.string().min(2),
@@ -22,6 +23,9 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return Response.json({ error: parsed.error.flatten() }, { status: 400 });
   }
+
+  const clinic = await getDefaultClinic();
+  if (!clinic) return Response.json({ error: "Clinic not found" }, { status: 500 });
 
   const { kvkkConsent: _, ...data } = parsed.data;
   const start = new Date(data.appointmentAt);
@@ -49,7 +53,7 @@ export async function POST(req: NextRequest) {
 
   const [appt] = await db
     .insert(appointments)
-    .values({ ...data, appointmentAt: start })
+    .values({ ...data, clinicId: clinic.id, appointmentAt: start })
     .returning();
 
   // n8n confirmation webhook (fire-and-forget)

@@ -1,12 +1,15 @@
 import { db } from "@/lib/db";
 import { doctors } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { getClinic } from "@/lib/clinic";
 
 export const dynamic = "force-dynamic";
 
 export default async function DoctorsAdminPage() {
+  const clinic = await getClinic();
   let docs: typeof doctors.$inferSelect[] = [];
   try {
-    docs = await db.select().from(doctors).orderBy(doctors.displayOrder);
+    docs = await db.select().from(doctors).where(eq(doctors.clinicId, clinic.id)).orderBy(doctors.displayOrder);
   } catch {}
 
   return (

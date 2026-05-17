@@ -3,6 +3,7 @@ import { verifyVapiSignature } from "@/lib/vapi";
 import { db } from "@/lib/db";
 import { voiceCalls, appointments } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { getClinicByAssistantId, getDefaultClinic } from "@/lib/clinic";
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
@@ -14,6 +15,15 @@ export async function POST(req: NextRequest) {
 
   const body = JSON.parse(rawBody);
   const call = body.call ?? body;
+
+  const assistantId = call.assistantId;
+  const clinic = assistantId
+    ? await getClinicByAssistantId(assistantId)
+    : await getDefaultClinic();
+
+  if (!clinic) {
+    return Response.json({ error: "Clinic not found" }, { status: 404 });
+  }
 
   // tool çağrılarından appointmentId bul
   let appointmentId: string | null = null;
@@ -38,6 +48,7 @@ export async function POST(req: NextRequest) {
   const [vc] = await db
     .insert(voiceCalls)
     .values({
+      clinicId: clinic.id,
       externalCallId: call.id ?? null,
       phone: call.customer?.number ?? "unknown",
       direction: call.type === "outboundPhoneCall" ? "outbound" : "inbound",

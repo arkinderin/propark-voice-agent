@@ -1,12 +1,15 @@
 import { db } from "@/lib/db";
 import { services } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { getClinic } from "@/lib/clinic";
 
 export const dynamic = "force-dynamic";
 
 export default async function ServicesAdminPage() {
+  const clinic = await getClinic();
   let svcs: typeof services.$inferSelect[] = [];
   try {
-    svcs = await db.select().from(services);
+    svcs = await db.select().from(services).where(eq(services.clinicId, clinic.id));
   } catch {}
 
   return (

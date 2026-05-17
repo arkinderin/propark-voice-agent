@@ -3,6 +3,7 @@ import { verifyVapiSignature } from "@/lib/vapi";
 import { db } from "@/lib/db";
 import { appointments, doctors, services } from "@/lib/db/schema";
 import { and, gte, lte, eq, sql } from "drizzle-orm";
+import { getClinicByAssistantId, getDefaultClinic } from "@/lib/clinic";
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
@@ -13,6 +14,15 @@ export async function POST(req: NextRequest) {
   }
 
   const body = JSON.parse(rawBody);
+  const assistantId = body.call?.assistantId ?? body.assistantId;
+  const clinic = assistantId
+    ? await getClinicByAssistantId(assistantId)
+    : await getDefaultClinic();
+
+  if (!clinic) {
+    return Response.json({ error: "Clinic not found" }, { status: 404 });
+  }
+
   const { patientName, phone, doctorId, serviceId, startAt, complaint } =
     body.functionCall?.parameters ?? {};
 
@@ -43,6 +53,7 @@ export async function POST(req: NextRequest) {
   const [appt] = await db
     .insert(appointments)
     .values({
+      clinicId: clinic.id,
       patientName,
       phone,
       doctorId: doctorId ?? null,

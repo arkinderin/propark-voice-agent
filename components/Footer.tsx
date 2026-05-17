@@ -1,39 +1,49 @@
-import { Phone, MapPin } from "lucide-react";
+import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300 mt-auto py-10">
-      <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div>
-          <h3 className="font-bold text-white text-lg mb-2">
-            {process.env.NEXT_PUBLIC_CLINIC_NAME}
-          </h3>
+    <footer className="bg-[#070B14] border-t border-white/5 text-slate-400 py-12">
+      <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+        <div className="col-span-2 md:col-span-1">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center">
+              <span className="text-white font-black text-xs">O</span>
+            </div>
+            <span className="font-bold text-white">operexo</span>
+          </div>
           <p className="text-sm leading-relaxed">
-            Sağlığınız için profesyonel hizmet.
+            Kliniklere yapay zeka destekli sesli randevu asistanı.
           </p>
         </div>
         <div>
-          <h4 className="font-semibold text-white mb-2">İletişim</h4>
-          <div className="flex items-center gap-2 text-sm mb-1">
-            <Phone size={14} />
-            <a href={`tel:${process.env.NEXT_PUBLIC_CLINIC_PHONE}`} className="hover:text-white">
-              {process.env.NEXT_PUBLIC_CLINIC_PHONE}
-            </a>
-          </div>
-          <div className="flex items-start gap-2 text-sm">
-            <MapPin size={14} className="mt-0.5 shrink-0" />
-            <span>{process.env.NEXT_PUBLIC_CLINIC_ADDRESS}</span>
-          </div>
+          <h4 className="font-semibold text-white text-sm mb-3">Ürün</h4>
+          <ul className="space-y-2 text-sm">
+            <li><Link href="/#ozellikler" className="hover:text-white transition">Özellikler</Link></li>
+            <li><Link href="/#fiyatlandirma" className="hover:text-white transition">Fiyatlandırma</Link></li>
+            <li><Link href="/#nasil-calisir" className="hover:text-white transition">Nasıl Çalışır</Link></li>
+          </ul>
         </div>
         <div>
-          <h4 className="font-semibold text-white mb-2">Çalışma Saatleri</h4>
-          <p className="text-sm">Pzt–Cuma: 09:00–19:00</p>
-          <p className="text-sm">Cumartesi: 10:00–14:00</p>
-          <p className="text-sm">Pazar: Kapalı</p>
+          <h4 className="font-semibold text-white text-sm mb-3">Şirket</h4>
+          <ul className="space-y-2 text-sm">
+            <li><Link href="/hakkimizda" className="hover:text-white transition">Hakkımızda</Link></li>
+            <li><Link href="/iletisim" className="hover:text-white transition">İletişim</Link></li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="font-semibold text-white text-sm mb-3">Hesap</h4>
+          <ul className="space-y-2 text-sm">
+            <li><Link href="/kayit" className="hover:text-white transition">Kayıt Ol</Link></li>
+            <li><Link href="/sign-in" className="hover:text-white transition">Giriş Yap</Link></li>
+          </ul>
         </div>
       </div>
-      <div className="mt-8 border-t border-gray-700 pt-4 text-center text-xs text-gray-500">
-        © {new Date().getFullYear()} {process.env.NEXT_PUBLIC_CLINIC_NAME}. Tüm hakları saklıdır.
+      <div className="max-w-6xl mx-auto px-4 border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+        <span>© {new Date().getFullYear()} Operexo. Tüm hakları saklıdır.</span>
+        <div className="flex gap-4">
+          <Link href="/gizlilik" className="hover:text-slate-400 transition">Gizlilik Politikası</Link>
+          <Link href="/kullanim-kosullari" className="hover:text-slate-400 transition">Kullanım Koşulları</Link>
+        </div>
       </div>
     </footer>
   );

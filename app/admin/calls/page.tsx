@@ -1,9 +1,10 @@
 import { db } from "@/lib/db";
 import { voiceCalls } from "@/lib/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { formatTR } from "@/lib/utils";
 import { Phone } from "lucide-react";
+import { getClinic } from "@/lib/clinic";
 
 export const dynamic = "force-dynamic";
 
@@ -17,9 +18,10 @@ const outcomeLabel: Record<string, string> = {
 };
 
 export default async function CallsPage() {
+  const clinic = await getClinic();
   let calls: typeof voiceCalls.$inferSelect[] = [];
   try {
-    calls = await db.select().from(voiceCalls).orderBy(desc(voiceCalls.createdAt)).limit(100);
+    calls = await db.select().from(voiceCalls).where(eq(voiceCalls.clinicId, clinic.id)).orderBy(desc(voiceCalls.createdAt)).limit(100);
   } catch {}
 
   return (
