@@ -55,6 +55,9 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
+          <Link href="/sign-in" onClick={() => setOpen(false)} className="text-slate-300 text-sm">
+            Giriş Yap
+          </Link>
           <Link href="/kayit" onClick={() => setOpen(false)} className="bg-indigo-600 text-white text-center px-4 py-2 rounded-lg text-sm font-medium">
             Ücretsiz Başla
           </Link>

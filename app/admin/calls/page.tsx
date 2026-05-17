@@ -1,72 +1,141 @@
 import { db } from "@/lib/db";
 import { voiceCalls } from "@/lib/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, count, sql } from "drizzle-orm";
 import Link from "next/link";
 import { formatTR } from "@/lib/utils";
-import { Phone } from "lucide-react";
+import { Phone, Clock, TrendingUp, MessageSquare } from "lucide-react";
 import { getClinic } from "@/lib/clinic";
 
 export const dynamic = "force-dynamic";
 
-const outcomeLabel: Record<string, string> = {
-  randevu_alindi: "✅ Randevu Alındı",
-  bilgi_verildi: "ℹ️ Bilgi Verildi",
-  insan_aktarimi: "👤 İnsan Aktarımı",
-  cevapsiz: "📵 Cevapsız",
-  spam: "🚫 Spam",
-  hata: "❌ Hata",
+const outcomeLabel: Record<string, { label: string; color: string; bg: string }> = {
+  randevu_alindi: { label: "Randevu Alındı", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  bilgi_verildi:  { label: "Bilgi Verildi",  color: "text-blue-400",    bg: "bg-blue-500/10" },
+  insan_aktarimi: { label: "İnsan Aktarımı", color: "text-amber-400",   bg: "bg-amber-500/10" },
+  cevapsiz:       { label: "Cevapsız",       color: "text-slate-400",   bg: "bg-slate-500/10" },
+  spam:           { label: "Spam",           color: "text-rose-400",    bg: "bg-rose-500/10" },
+  hata:           { label: "Hata",           color: "text-rose-400",    bg: "bg-rose-500/10" },
 };
 
 export default async function CallsPage() {
   const clinic = await getClinic();
   let calls: typeof voiceCalls.$inferSelect[] = [];
+  let outcomeCounts: { outcome: string | null; count: number }[] = [];
+  let avgDuration = 0;
+  let totalCalls = 0;
+
   try {
-    calls = await db.select().from(voiceCalls).where(eq(voiceCalls.clinicId, clinic.id)).orderBy(desc(voiceCalls.createdAt)).limit(100);
+    [calls, outcomeCounts] = await Promise.all([
+      db.select().from(voiceCalls).where(eq(voiceCalls.clinicId, clinic.id)).orderBy(desc(voiceCalls.createdAt)).limit(100),
+      db.select({ outcome: voiceCalls.outcome, count: count() }).from(voiceCalls).where(eq(voiceCalls.clinicId, clinic.id)).groupBy(voiceCalls.outcome),
+    ]);
+    totalCalls = calls.length;
+    const withDuration = calls.filter(c => c.durationSeconds);
+    avgDuration = withDuration.length > 0 ? Math.round(withDuration.reduce((s, c) => s + (c.durationSeconds ?? 0), 0) / withDuration.length) : 0;
   } catch {}
+
+  const booked = outcomeCounts.find(o => o.outcome === "randevu_alindi")?.count ?? 0;
+  const convRate = totalCalls > 0 ? Math.round((booked / totalCalls) * 100) : 0;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Voice Aramalar</h1>
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">Telefon</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">Yön</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">Süre</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">Sonuç</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">Tarih</th>
-              <th className="px-4 py-3"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {calls.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="text-center py-10 text-gray-400">
-                  <Phone size={32} className="mx-auto mb-2 opacity-30" />
-                  Henüz arama kaydı yok
-                </td>
-              </tr>
-            ) : (
-              calls.map((c) => (
-                <tr key={c.id} className="border-b last:border-0 hover:bg-gray-50 transition">
-                  <td className="px-4 py-3 font-medium text-gray-900">{c.phone}</td>
-                  <td className="px-4 py-3 text-gray-500">{c.direction === "inbound" ? "Gelen" : "Giden"}</td>
-                  <td className="px-4 py-3 text-gray-500">
-                    {c.durationSeconds ? `${Math.floor(c.durationSeconds / 60)}:${String(c.durationSeconds % 60).padStart(2, "0")}` : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-xs">{c.outcome ? outcomeLabel[c.outcome] ?? c.outcome : "—"}</td>
-                  <td className="px-4 py-3 text-gray-500 text-xs">{formatTR(c.createdAt, "d MMM yyyy, HH:mm")}</td>
-                  <td className="px-4 py-3 text-right">
-                    <Link href={`/admin/calls/${c.id}`} className="text-blue-600 hover:underline text-xs">
-                      Detay
-                    </Link>
-                  </td>
-                </tr>
-              ))
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-white">AI Görüşme Analizi</h1>
+        <p className="text-slate-500 text-sm mt-1">Sesli asistan tarafından gerçekleştirilen aramalar</p>
+      </div>
+
+      {/* Özet istatistikler */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {[
+          { label: "Toplam Arama", value: totalCalls, icon: Phone, color: "text-cyan-400", border: "border-cyan-500/20", bg: "bg-cyan-500/10" },
+          { label: "Randevuya Dönen", value: booked, icon: TrendingUp, color: "text-emerald-400", border: "border-emerald-500/20", bg: "bg-emerald-500/10" },
+          { label: "Dönüşüm Oranı", value: `%${convRate}`, icon: MessageSquare, color: "text-indigo-400", border: "border-indigo-500/20", bg: "bg-indigo-500/10" },
+          { label: "Ort. Süre", value: avgDuration > 0 ? `${Math.floor(avgDuration/60)}:${String(avgDuration%60).padStart(2,"0")}` : "—", icon: Clock, color: "text-amber-400", border: "border-amber-500/20", bg: "bg-amber-500/10" },
+        ].map(s => (
+          <div key={s.label} className={`bg-[#0D1117] border ${s.border} rounded-2xl p-5 flex items-center gap-4`}>
+            <div className={`${s.bg} p-3 rounded-xl shrink-0`}>
+              <s.icon size={20} className={s.color} />
+            </div>
+            <div>
+              <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
+              <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        {/* Sonuç dağılımı */}
+        <div className="bg-[#0D1117] border border-white/5 rounded-2xl p-5">
+          <h2 className="font-semibold text-white text-sm mb-4">Görüşme Sonuçları</h2>
+          <div className="space-y-3">
+            {outcomeCounts
+              .sort((a, b) => b.count - a.count)
+              .map(oc => {
+                const key = oc.outcome ?? "hata";
+                const info = outcomeLabel[key] ?? { label: key, color: "text-slate-400", bg: "bg-slate-500/10" };
+                const pct = totalCalls > 0 ? Math.round((oc.count / totalCalls) * 100) : 0;
+                return (
+                  <div key={key}>
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <span className={info.color}>{info.label}</span>
+                      <span className="text-slate-500">{oc.count} (%{pct})</span>
+                    </div>
+                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full bg-indigo-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            {outcomeCounts.length === 0 && (
+              <p className="text-slate-600 text-xs text-center py-4">Henüz arama verisi yok</p>
             )}
-          </tbody>
-        </table>
+          </div>
+        </div>
+
+        {/* Son görüşmeler */}
+        <div className="lg:col-span-2 bg-[#0D1117] border border-white/5 rounded-2xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-white/5">
+            <h2 className="font-semibold text-white text-sm">Son Görüşmeler</h2>
+          </div>
+          <div className="divide-y divide-white/5">
+            {calls.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-slate-600">
+                <Phone size={32} className="mb-2 opacity-30" />
+                <p className="text-sm">Henüz arama kaydı yok</p>
+              </div>
+            ) : calls.slice(0, 8).map(c => {
+              const info = c.outcome ? (outcomeLabel[c.outcome] ?? { label: c.outcome, color: "text-slate-400", bg: "bg-slate-500/10" }) : null;
+              const dur = c.durationSeconds ? `${Math.floor(c.durationSeconds/60)}:${String(c.durationSeconds%60).padStart(2,"0")}` : null;
+              return (
+                <Link key={c.id} href={`/admin/calls/${c.id}`} className="flex items-center gap-4 px-5 py-3.5 hover:bg-white/[0.02] transition group">
+                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                    <Phone size={14} className="text-slate-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-white font-medium">{c.phone}</span>
+                      {info && (
+                        <span className={`text-xs px-1.5 py-0.5 rounded-md ${info.bg} ${info.color}`}>{info.label}</span>
+                      )}
+                    </div>
+                    {c.summary ? (
+                      <p className="text-xs text-slate-500 truncate mt-0.5">{c.summary}</p>
+                    ) : (
+                      <p className="text-xs text-slate-600 mt-0.5">{c.direction === "inbound" ? "Gelen arama" : "Giden arama"}{dur ? ` · ${dur}` : ""}</p>
+                    )}
+                  </div>
+                  <div className="text-xs text-slate-600 shrink-0">{formatTR(c.createdAt, "d MMM, HH:mm")}</div>
+                </Link>
+              );
+            })}
+          </div>
+          {calls.length > 8 && (
+            <div className="px-5 py-3 border-t border-white/5 text-center">
+              <span className="text-xs text-slate-600">+{calls.length - 8} daha fazla görüşme</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
