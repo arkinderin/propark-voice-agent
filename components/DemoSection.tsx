@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Phone, PhoneOff, Mic, MicOff, ChevronRight, Loader2 } from "lucide-react";
 import Vapi from "@vapi-ai/web";
 
@@ -23,19 +23,34 @@ export default function DemoSection() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [transcripts]);
 
-  const initVapi = useCallback(() => {
-    if (vapiRef.current) return vapiRef.current;
-    const publicKey = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY!;
+  // Vapi instance'ı mount'ta bir kez oluştur, unmount'ta temizle
+  useEffect(() => {
+    const publicKey = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY;
+    if (!publicKey) {
+      setError("NEXT_PUBLIC_VAPI_PUBLIC_KEY tanımlı değil — dev server'ı yeniden başlatın.");
+      return;
+    }
+
     const vapi = new Vapi(publicKey);
+    vapiRef.current = vapi;
 
     vapi.on("call-start", () => setStatus("active"));
     vapi.on("call-end", () => {
       setStatus("ended");
       setTimeout(() => setStatus("idle"), 3000);
     });
-    vapi.on("error", (e) => {
-      console.error("VAPI error", e);
-      setError("Bağlantı hatası. Lütfen tekrar deneyin.");
+    vapi.on("error", (e: unknown) => {
+      const msg = e && typeof e === "object" && "message" in e
+        ? (e as { message: string }).message
+        : JSON.stringify(e);
+      console.error("VAPI error:", msg, e);
+      if (msg?.includes("ejected") || msg?.includes("permission") || msg?.includes("mic")) {
+        setError("Mikrofon izni reddedildi. Tarayıcı adres çubuğundaki kilit ikonundan izin verin.");
+      } else if (msg?.includes("401") || msg?.includes("auth") || msg?.includes("key")) {
+        setError("API anahtarı geçersiz. VAPI dashboard'dan Public Key'i kontrol edin.");
+      } else {
+        setError(`Bağlantı hatası: ${msg || "Bilinmeyen hata"}. Lütfen tekrar deneyin.`);
+      }
       setStatus("idle");
     });
     vapi.on("volume-level", (vol: number) => setVolumeLevel(vol));
@@ -48,39 +63,44 @@ export default function DemoSection() {
       }
     });
 
-    vapiRef.current = vapi;
-    return vapi;
+    return () => { vapi.stop(); };
   }, []);
 
   const startCall = async () => {
     setError(null);
     setTranscripts([]);
     setStatus("connecting");
+
+    // Mikrofon iznini önceden iste
     try {
-      const vapi = initVapi();
-      const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID!;
-      await vapi.start(assistantId);
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      setError("Mikrofon izni reddedildi. Tarayıcı adres çubuğundaki kilit ikonundan izin verin.");
+      setStatus("idle");
+      return;
+    }
+
+    try {
+      const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID;
+      if (!assistantId) throw new Error("NEXT_PUBLIC_VAPI_ASSISTANT_ID tanımlı değil");
+      await vapiRef.current!.start(assistantId);
     } catch (e) {
-      console.error(e);
-      setError("Arama başlatılamadı. Mikrofon izni verildiğinden emin olun.");
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("VAPI start error:", msg);
+      setError(`Arama başlatılamadı: ${msg}`);
       setStatus("idle");
     }
   };
 
-  const endCall = async () => {
+  const endCall = () => {
     setStatus("ending");
     vapiRef.current?.stop();
   };
 
   const toggleMute = () => {
     if (!vapiRef.current) return;
-    if (isMuted) {
-      vapiRef.current.setMuted(false);
-      setIsMuted(false);
-    } else {
-      vapiRef.current.setMuted(true);
-      setIsMuted(true);
-    }
+    vapiRef.current.setMuted(!isMuted);
+    setIsMuted((m) => !m);
   };
 
   const volumeBars = Array.from({ length: 5 }, (_, i) => i < Math.round(volumeLevel * 5));
