@@ -1,48 +1,49 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Phone, Calendar, BarChart2, Zap, Shield, Clock, CheckCircle, ArrowRight, Star, MessageSquare, TrendingUp } from "lucide-react";
+import PricingSection from "@/components/PricingSection";
+import { Phone, Calendar, BarChart2, Zap, Shield, Clock, ArrowRight, Star, MessageSquare, TrendingUp } from "lucide-react";
 
 const features = [
   {
     icon: Phone,
-    title: "7/24 Sesli Asistan",
-    desc: "Türkçe konuşan AI asistan, hasta aramaları hiç kaçırmadan karşılar ve randevu alır.",
+    title: "7/24 Konsültasyon Hattı",
+    desc: "Lazer, botoks, dolgu — müşterileriniz saat kaçta ararsa arasın, AI asistan anında karşılar ve konsültasyon randevusu alır.",
     color: "text-indigo-400",
     bg: "bg-indigo-500/10",
   },
   {
     icon: Calendar,
     title: "Otomatik Randevu",
-    desc: "Müsaitlik kontrolü, randevu oluşturma ve takvim yönetimi tamamen otomatik.",
+    desc: "Seans takvimini yönet, çakışmaları önle. Müşteri araması geldiğinde uygun saat anında önerilir.",
     color: "text-cyan-400",
     bg: "bg-cyan-500/10",
   },
   {
     icon: BarChart2,
     title: "Gerçek Zamanlı Dashboard",
-    desc: "Tüm aramaları, randevuları ve istatistikleri tek ekrandan takip edin.",
+    desc: "Tüm aramaları, konsültasyonları ve seans randevularını tek ekrandan takip edin.",
     color: "text-emerald-400",
     bg: "bg-emerald-500/10",
   },
   {
     icon: MessageSquare,
-    title: "Doğal Konuşma",
-    desc: "Hastalara insan gibi cevap veren, bağlamı anlayan gelişmiş dil modeli.",
+    title: "Fiyat Soruları Yönetimi",
+    desc: "\"Botoks kaç para?\", \"Kaç seans lazım?\" gibi soruları AI halleder, müşteriyi ücretsiz konsültasyona yönlendirir.",
     color: "text-violet-400",
     bg: "bg-violet-500/10",
   },
   {
     icon: Shield,
     title: "KVKK Uyumlu",
-    desc: "Tüm hasta verileri şifreli, Türkiye sunucularında güvenle saklanır.",
+    desc: "Tüm müşteri verileri şifreli, Türkiye sunucularında güvenle saklanır.",
     color: "text-rose-400",
     bg: "bg-rose-500/10",
   },
   {
     icon: TrendingUp,
     title: "Dönüşüm Analizi",
-    desc: "Kaç arama randevuya dönüştü? Cevapsız aramalar kimdi? Tüm metrikler elinizde.",
+    desc: "Kaç arama konsültasyona dönüştü? Sezon bazlı doluluk raporu. Tüm metrikler elinizde.",
     color: "text-amber-400",
     bg: "bg-amber-500/10",
   },
@@ -50,85 +51,27 @@ const features = [
 
 const steps = [
   { step: "01", title: "Kaydolun", desc: "Kliniğinizi 5 dakikada sisteme ekleyin, planınızı seçin." },
-  { step: "02", title: "Ayarlayın", desc: "Doktorlarınızı, hizmetlerinizi ve çalışma saatlerinizi girin." },
-  { step: "03", title: "Yayına Alın", desc: "Size özel telefon numarasını aktive edin, AI asistan hazır." },
-];
-
-const plans = [
-  {
-    name: "Starter",
-    price: "2.490",
-    setup: "2.500",
-    credits: "300",
-    overage: "10",
-    desc: "Tek lokasyon klinikler için",
-    features: [
-      "300 operasyon kredisi/ay",
-      "1 telefon numarası",
-      "Randevu takvimi & dashboard",
-      "E-posta bildirimleri",
-      "Aşım: 10₺/kredi",
-    ],
-    cta: "Starter ile Başla",
-    highlight: false,
-  },
-  {
-    name: "Professional",
-    price: "4.990",
-    setup: "5.000",
-    credits: "700",
-    overage: "8",
-    desc: "Büyüyen klinikler için tam paket",
-    features: [
-      "700 operasyon kredisi/ay",
-      "2 telefon numarası",
-      "WhatsApp AI takip dahil",
-      "Gelmeme azaltma (SMS/WA)",
-      "Gelişmiş analitik",
-      "Öncelikli destek",
-      "Aşım: 8₺/kredi",
-    ],
-    cta: "Professional ile Başla",
-    highlight: true,
-  },
-  {
-    name: "Enterprise",
-    price: "9.990",
-    setup: "10.000",
-    credits: "1.800",
-    overage: "6",
-    desc: "Zincir klinikler & hastaneler için",
-    features: [
-      "1.800 operasyon kredisi/ay",
-      "5 telefon numarası",
-      "Çok şubeli yönetim",
-      "CRM & özel entegrasyonlar",
-      "White-label seçeneği",
-      "Dedicated account manager",
-      "Aşım: 6₺/kredi",
-    ],
-    cta: "Satış Ekibiyle Görüş",
-    highlight: false,
-  },
+  { step: "02", title: "Hizmetleri Girin", desc: "Lazer, botoks, dolgu — sunduğunuz hizmetleri ve uzmanlarınızı ekleyin." },
+  { step: "03", title: "Yayına Alın", desc: "Size özel telefon numarasını aktive edin. AI asistan fiyat sorularını, konsültasyon ve seans randevularını otomatik halleder." },
 ];
 
 const testimonials = [
   {
-    name: "Dr. Ayşe Kaya",
-    role: "Diş Kliniği Sahibi, İstanbul",
-    text: "Randevu kayıplarımız %90 azaldı. Artık telefonu kaçırmak diye bir şey kalmadı.",
+    name: "Dr. Zeynep Arslan",
+    role: "Lazer Epilasyon & Estetik Merkezi, İstanbul",
+    text: "Yaz sezonu öncesi arama hacmimiz 3 katına çıktı. Operexo olmadan o yükün altından kalkamadık. Personelimiz artık seansa odaklanıyor.",
     stars: 5,
   },
   {
-    name: "Op. Dr. Mehmet Demir",
-    role: "Genel Cerrahi, Ankara",
-    text: "Personelimiz artık sadece hastalarla ilgileniyor. Telefon işlerini AI hallediyor.",
+    name: "Op. Dr. Selin Kaya",
+    role: "Medikal Estetik Kliniği, Ankara",
+    text: "Botoks ve dolgu danışma randevularımız ilk ayda yüzde 65 arttı. Fiyat sorularını AI çok iyi yönetiyor, konsültasyona yönlendiriyor.",
     stars: 5,
   },
   {
-    name: "Uzm. Dr. Fatma Yıldız",
-    role: "Dermatoloji, İzmir",
-    text: "Kurulum 1 günde bitti, ilk haftada 40'tan fazla yeni randevu aldık.",
+    name: "Estetisyen Derya Yılmaz",
+    role: "Güzellik & Estetik Merkezi, İzmir",
+    text: "Akşam 22'de bile lazer randevusu alabiliyorlar. Sabah panele bakıyorum, gece gelen 8-10 yeni randevu var.",
     stars: 5,
   },
 ];
@@ -145,16 +88,16 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-1.5 text-sm text-indigo-300 mb-6">
             <Zap size={14} />
-            <span>Türkiye&apos;nin ilk AI Klinik Sesli Asistanı</span>
+            <span>Medikal Estetik Klinikleri için tasarlandı</span>
           </div>
           <h1 className="text-5xl md:text-6xl font-black leading-tight mb-6 tracking-tight">
-            Kliniğiniz artık
+            Lazer, botoks, dolgu —
             <span className="block bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-              7/24 açık
+              randevular otomatik
             </span>
           </h1>
           <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            Yapay zeka destekli sesli asistan, hasta aramalarını otomatik karşılar, randevu alır ve takibini yapar. Hiç kaçan çağrı olmaz.
+            AI sesli asistan fiyat sorularını yönetir, ücretsiz konsültasyon randevusu alır ve seans takviminizi doldurur. Gece 02&apos;de gelen aramaları bile.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
@@ -185,7 +128,7 @@ export default function HomePage() {
             </div>
             <div className="p-6 grid grid-cols-3 gap-4">
               {[
-                { label: "Bugün Randevu", value: "24", color: "text-indigo-400" },
+                { label: "Bugün Konsültasyon", value: "24", color: "text-indigo-400" },
                 { label: "Toplam Arama", value: "1,847", color: "text-cyan-400" },
                 { label: "Dönüşüm Oranı", value: "%78", color: "text-emerald-400" },
               ].map((s) => (
@@ -219,9 +162,9 @@ export default function HomePage() {
       <section className="border-y border-white/5 bg-white/[0.02] py-8">
         <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {[
-            { value: "500+", label: "Aktif Klinik" },
+            { value: "500+", label: "Aktif Estetik Klinik" },
             { value: "1M+", label: "Yönetilen Arama" },
-            { value: "%78", label: "Ortalama Dönüşüm" },
+            { value: "%78", label: "Konsültasyona Dönüşüm" },
             { value: "7/24", label: "Kesintisiz Hizmet" },
           ].map((s) => (
             <div key={s.label}>
@@ -237,8 +180,8 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
             <p className="text-indigo-400 text-sm font-medium uppercase tracking-widest mb-3">Özellikler</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-white">Her şey dahil</h2>
-            <p className="text-slate-400 mt-3 max-w-xl mx-auto">Klinik yönetimini kolaylaştıran tüm araçlar tek platformda.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-white">Estetik klinik için her şey</h2>
+            <p className="text-slate-400 mt-3 max-w-xl mx-auto">Lazer, botoks, dolgu — seans takviminden fiyat sorularına kadar tüm operasyon tek platformda.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {features.map((f) => (
@@ -278,70 +221,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="fiyatlandirma" className="py-24 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <p className="text-emerald-400 text-sm font-medium uppercase tracking-widest mb-3">Fiyatlandırma</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-white">Şeffaf fiyatlandırma</h2>
-            <p className="text-slate-400 mt-3">Gizli ücret yok. İstediğinde iptal et.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {plans.map((p) => (
-              <div
-                key={p.name}
-                className={`relative rounded-2xl p-6 border flex flex-col ${
-                  p.highlight
-                    ? "bg-indigo-600/10 border-indigo-500/50 shadow-xl shadow-indigo-950/50"
-                    : "bg-[#0D1117] border-white/5"
-                }`}
-              >
-                {p.highlight && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                    En Popüler
-                  </div>
-                )}
-                <div className="mb-4">
-                  <h3 className="font-bold text-white text-lg">{p.name}</h3>
-                  <p className="text-slate-500 text-sm mt-1">{p.desc}</p>
-                </div>
-                <div className="mb-2">
-                  <span className="text-4xl font-black text-white">₺{p.price}</span>
-                  <span className="text-slate-500 text-sm">/ay</span>
-                </div>
-                <div className="text-xs text-slate-600 mb-5">
-                  + ₺{p.setup} kurulum ücreti (tek seferlik)
-                </div>
-                <div className="bg-white/[0.03] border border-white/5 rounded-xl px-3 py-2.5 mb-5 flex items-center justify-between">
-                  <span className="text-xs text-slate-400">{p.credits} operasyon kredisi/ay</span>
-                  <span className="text-xs text-slate-600">Aşım: {p.overage}₺/kredi</span>
-                </div>
-                <ul className="space-y-2.5 mb-6 flex-1">
-                  {p.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2.5 text-sm text-slate-300">
-                      <CheckCircle size={14} className="text-emerald-400 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/kayit"
-                  className={`block text-center py-2.5 px-4 rounded-xl font-medium text-sm transition ${
-                    p.highlight
-                      ? "bg-indigo-600 hover:bg-indigo-500 text-white"
-                      : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
-                  }`}
-                >
-                  {p.cta}
-                </Link>
-              </div>
-            ))}
-          </div>
-          <p className="text-center text-slate-600 text-sm mt-6">
-            Yıllık ödemede %20 indirim · 14 gün ücretsiz deneme · İstediğinde iptal
-          </p>
-        </div>
-      </section>
+      <PricingSection />
 
       {/* Testimonials */}
       <section className="py-24 px-4 bg-white/[0.02] border-y border-white/5">

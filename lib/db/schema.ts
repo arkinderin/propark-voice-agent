@@ -7,6 +7,7 @@ import {
   jsonb,
   boolean,
   index,
+  real,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -117,6 +118,7 @@ export const voiceCalls = pgTable("voice_calls", {
   }),
   appointmentId: uuid("appointment_id").references(() => appointments.id),
   recordingUrl: text("recording_url"),
+  costUsd: real("cost_usd"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

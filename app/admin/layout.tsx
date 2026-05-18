@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar, Phone, Users, Settings, BarChart2, Stethoscope, Zap } from "lucide-react";
+import { Calendar, Phone, Users, Settings, BarChart2, Stethoscope, Zap, TrendingUp } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 
 const navItems = [
@@ -9,6 +9,7 @@ const navItems = [
   { href: "/admin/doctors", icon: Users, label: "Doktorlar" },
   { href: "/admin/services", icon: Stethoscope, label: "Hizmetler" },
   { href: "/admin/ayarlar", icon: Settings, label: "Ayarlar" },
+  { href: "/admin/karlilik", icon: TrendingUp, label: "Kârlılık" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

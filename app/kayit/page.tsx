@@ -7,61 +7,77 @@ import { ArrowLeft, ArrowRight, CheckCircle, Building2, User, Phone, MapPin, Ste
 const plans = [
   {
     id: "baslangic",
-    name: "Starter",
-    price: "2.490",
-    setup: "2.500",
-    idealFor: "Tek hekimli muayenehane veya küçük klinik",
-    callsPerDay: "Günde ~5–10 arama",
+    name: "Solo Klinik",
+    price: "1.990",
+    setup: "3.500",
+    idealFor: "Tek uzman veya küçük estetik merkezi",
+    callsPerDay: "Günde ~5 arama",
     badge: null,
     features: [
-      "Aylık ~300 hasta görüşmesi",
-      "1 telefon hattı",
-      "Randevu takvimi & dashboard",
+      "Aylık 150 hasta etkileşimi",
+      "1 AI telefon hattı",
+      "Randevu takvimi & yönetim paneli",
       "E-posta bildirimleri",
     ],
-    notFor: "Yoğun klinikler için yeterli olmayabilir",
+    notFor: "Günde 10+ arama alan klinikler için yeterli olmayabilir",
   },
   {
     id: "profesyonel",
-    name: "Professional",
-    price: "4.990",
+    name: "Aktif Klinik",
+    price: "4.490",
     setup: "5.000",
-    idealFor: "Birden fazla hekim, aktif klinik",
-    callsPerDay: "Günde ~15–25 arama",
-    badge: "En Çok Tercih Edilen",
+    idealFor: "Birden fazla uzman, büyüyen estetik klinik veya zincir",
+    callsPerDay: "Günde ~10 arama",
+    badge: "Kliniklerin %73'ü bu paketi seçiyor",
     features: [
-      "Aylık ~700 hasta görüşmesi",
-      "2 telefon hattı",
-      "WhatsApp otomatik takip",
-      "Gelmeme azaltma (hatırlatma)",
-      "Gelişmiş raporlar",
+      "Aylık 300 hasta etkileşimi",
+      "2 AI telefon hattı",
+      "WhatsApp AI takip — otomatik mesaj",
+      "Gelmeme oranını %35 azalt (SMS/WA)",
+      "Gelişmiş analitik & dönüşüm raporu",
+      "Öncelikli destek — 4 saat yanıt",
     ],
     notFor: null,
     popular: true,
   },
   {
     id: "kurumsal",
-    name: "Enterprise",
-    price: "9.990",
-    setup: "10.000",
-    idealFor: "Poliklinik veya çok şubeli klinik zinciri",
-    callsPerDay: "Günde 40+ arama",
+    name: "Kurumsal",
+    price: null,
+    setup: null,
+    idealFor: "Çok şubeli estetik zincir veya poliklinik grubu",
+    callsPerDay: "Özel limit",
     badge: null,
     features: [
-      "Aylık ~1.800 hasta görüşmesi",
-      "5 telefon hattı",
-      "Çok şubeli yönetim",
-      "CRM entegrasyonu",
-      "White-label seçeneği",
+      "Özel hasta etkileşimi limiti",
+      "Sınırsız telefon hattı & lokasyon",
+      "CRM & ERP entegrasyonu",
+      "White-label platform seçeneği",
+      "Dedicated account manager",
     ],
     notFor: null,
+    contactSales: true,
   },
 ];
 
 const specialties = [
-  "Diş Kliniği", "Genel Cerrahi", "Dahiliye", "Kardiyoloji", "Ortopedi",
-  "Kadın Hastalıkları", "Dermatoloji", "Göz Hastalıkları", "KBB", "Nöroloji",
-  "Psikiyatri", "Üroloji", "Fizik Tedavi", "Çocuk Sağlığı", "Diğer",
+  "Lazer Epilasyon & Güzellik Merkezi",
+  "Medikal Estetik Kliniği",
+  "Dermatoloji & Cilt Bakımı",
+  "Diş Kliniği",
+  "Genel Cerrahi",
+  "Dahiliye",
+  "Kardiyoloji",
+  "Ortopedi",
+  "Kadın Hastalıkları",
+  "Göz Hastalıkları",
+  "KBB",
+  "Nöroloji",
+  "Psikiyatri",
+  "Üroloji",
+  "Fizik Tedavi",
+  "Çocuk Sağlığı",
+  "Diğer",
 ];
 
 export default function KayitPage() {
@@ -294,8 +310,14 @@ export default function KayitPage() {
                         </div>
                       </div>
                       <div className="text-right shrink-0 ml-3">
-                        <span className="font-bold text-white">₺{p.price}<span className="text-slate-500 font-normal text-xs">/ay</span></span>
-                        <div className="text-[10px] text-slate-600">+ ₺{p.setup} kurulum</div>
+                        {p.price ? (
+                          <>
+                            <span className="font-bold text-white">₺{p.price}<span className="text-slate-500 font-normal text-xs">/ay</span></span>
+                            <div className="text-[10px] text-slate-600">+ ₺{p.setup} onboarding</div>
+                          </>
+                        ) : (
+                          <span className="font-bold text-amber-400 text-sm">Özel Teklif</span>
+                        )}
                       </div>
                     </div>
                     <div className={`flex items-center gap-2 px-3 py-2 rounded-lg mb-3 ${form.plan === p.id ? "bg-indigo-500/15" : "bg-white/[0.03]"}`}>

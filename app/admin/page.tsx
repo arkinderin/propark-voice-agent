@@ -49,10 +49,10 @@ export default async function AdminDashboard() {
   };
 
   const stats = [
-    { label: "Bugün Randevu", value: todayCount, icon: Calendar, color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
-    { label: "Bekleyen Talep", value: pendingCount, icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-    { label: "Toplam Arama", value: totalCalls, icon: Phone, color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20" },
-    { label: "Dönüşüm Oranı", value: `%${conversionRate}`, icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+    { label: "Bugün Randevu", value: todayCount, icon: Calendar, color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", href: "/admin/appointments" },
+    { label: "Bekleyen Talep", value: pendingCount, icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", href: "/admin/appointments?status=talep" },
+    { label: "Toplam Arama", value: totalCalls, icon: Phone, color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20", href: "/admin/calls" },
+    { label: "Dönüşüm Oranı", value: `%${conversionRate}`, icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", href: "/admin/calls" },
   ];
 
   return (
@@ -64,7 +64,7 @@ export default async function AdminDashboard() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {stats.map((s) => (
-          <div key={s.label} className={`bg-[#0D1117] border ${s.border} rounded-2xl p-5 flex items-center gap-4`}>
+          <Link key={s.label} href={s.href} className={`bg-[#0D1117] border ${s.border} rounded-2xl p-5 flex items-center gap-4 hover:bg-white/[0.03] transition`}>
             <div className={`${s.bg} p-3 rounded-xl shrink-0`}>
               <s.icon size={20} className={s.color} />
             </div>
@@ -72,7 +72,7 @@ export default async function AdminDashboard() {
               <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
               <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -95,15 +95,15 @@ export default async function AdminDashboard() {
             {/* Huni */}
             <div className="grid grid-cols-3 gap-3 mb-5">
               {[
-                { label: "Toplam Arama", value: totalCalls, color: "text-cyan-400", sub: "AI tarafından karşılandı" },
-                { label: "Randevuya Döndü", value: outcomeCounts.find(o => o.outcome === "randevu_alindi")?.cnt ?? 0, color: "text-emerald-400", sub: `%${conversionRate} dönüşüm` },
-                { label: "Ort. Görüşme", value: avgDuration > 0 ? `${Math.floor(avgDuration/60)}:${String(avgDuration%60).padStart(2,"0")}` : "—", color: "text-amber-400", sub: "dakika:saniye" },
+                { label: "Toplam Arama", value: totalCalls, color: "text-cyan-400", sub: "AI tarafından karşılandı", href: "/admin/calls" },
+                { label: "Randevuya Döndü", value: outcomeCounts.find(o => o.outcome === "randevu_alindi")?.cnt ?? 0, color: "text-emerald-400", sub: `%${conversionRate} dönüşüm`, href: "/admin/calls?outcome=randevu_alindi" },
+                { label: "Ort. Görüşme", value: avgDuration > 0 ? `${Math.floor(avgDuration/60)}:${String(avgDuration%60).padStart(2,"0")}` : "—", color: "text-amber-400", sub: "dakika:saniye", href: "/admin/calls" },
               ].map(f => (
-                <div key={f.label} className="bg-white/[0.02] rounded-xl p-4 text-center">
+                <Link key={f.label} href={f.href} className="bg-white/[0.02] hover:bg-white/[0.05] rounded-xl p-4 text-center transition">
                   <div className={`text-2xl font-bold ${f.color}`}>{f.value}</div>
                   <div className="text-xs font-medium text-white mt-0.5">{f.label}</div>
                   <div className="text-[10px] text-slate-600 mt-0.5">{f.sub}</div>
-                </div>
+                </Link>
               ))}
             </div>
 
@@ -114,13 +114,13 @@ export default async function AdminDashboard() {
                 const cfg = outcomeConfig[key] ?? { label: key, color: "bg-slate-500" };
                 const pct = totalCalls > 0 ? Math.round((oc.cnt / totalCalls) * 100) : 0;
                 return (
-                  <div key={key} className="flex items-center gap-3">
-                    <span className="text-xs text-slate-400 w-32 shrink-0">{cfg.label}</span>
+                  <Link key={key} href={`/admin/calls?outcome=${key}`} className="flex items-center gap-3 group hover:opacity-80 transition">
+                    <span className="text-xs text-slate-400 w-32 shrink-0 group-hover:text-slate-300 transition">{cfg.label}</span>
                     <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
                       <div className={`h-full ${cfg.color} rounded-full`} style={{ width: `${pct}%` }} />
                     </div>
                     <span className="text-xs text-slate-500 w-16 text-right shrink-0">{oc.cnt} (%{pct})</span>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

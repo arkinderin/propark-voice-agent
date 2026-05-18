@@ -12,19 +12,19 @@ export function getIyzipay() {
 
 export const PLAN_PRICES = {
   baslangic: {
-    name: "Operexo Starter",
-    monthly: 249000,   // 2490₺ (kuruş cinsinden)
-    setup: 250000,     // 2500₺
+    name: "Operexo Solo Klinik",
+    monthly: 199000,   // 1990₺ (kuruş cinsinden)
+    setup: 350000,     // 3500₺
   },
   profesyonel: {
-    name: "Operexo Professional",
-    monthly: 499000,
-    setup: 500000,
+    name: "Operexo Aktif Klinik",
+    monthly: 449000,   // 4490₺
+    setup: 500000,     // 5000₺
   },
   kurumsal: {
-    name: "Operexo Enterprise",
-    monthly: 999000,
-    setup: 1000000,
+    name: "Operexo Kurumsal",
+    monthly: 999000,   // 9990₺ — contact sales, display-only
+    setup: 1000000,    // 10000₺
   },
 } as const;
 

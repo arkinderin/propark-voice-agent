@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { voiceCalls } from "@/lib/db/schema";
+import { voiceCalls, appointments } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { formatTR } from "@/lib/utils";
@@ -20,8 +20,13 @@ const outcomeLabel: Record<string, { label: string; color: string; bg: string }>
 export default async function CallDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   let call: typeof voiceCalls.$inferSelect | undefined;
+  let patientName: string | null = null;
   try {
     call = await db.query.voiceCalls.findFirst({ where: eq(voiceCalls.id, id) });
+    if (call?.appointmentId) {
+      const appt = await db.query.appointments.findFirst({ where: eq(appointments.id, call.appointmentId) });
+      patientName = appt?.patientName ?? null;
+    }
   } catch {}
   if (!call) notFound();
 
@@ -36,8 +41,11 @@ export default async function CallDetailPage({ params }: { params: Promise<{ id:
 
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">{call.phone}</h1>
-          <p className="text-slate-500 text-sm mt-0.5">{formatTR(call.createdAt, "d MMMM yyyy, HH:mm")}</p>
+          <h1 className="text-2xl font-bold text-white">{patientName ?? call.phone}</h1>
+          <p className="text-slate-500 text-sm mt-0.5">
+            {patientName && <span className="mr-2">{call.phone} ·</span>}
+            {formatTR(call.createdAt, "d MMMM yyyy, HH:mm")}
+          </p>
         </div>
         {info && (
           <span className={`text-sm px-3 py-1 rounded-full border ${info.bg} ${info.color}`}>{info.label}</span>

@@ -45,6 +45,15 @@ export async function POST(req: NextRequest) {
   if (call.endedReason === "customer-ended-call") outcome = "bilgi_verildi";
   if (appointmentId) outcome = "randevu_alindi";
 
+  const durationSeconds = call.endedAt
+    ? Math.round((new Date(call.endedAt).getTime() - new Date(call.startedAt).getTime()) / 1000)
+    : null;
+
+  // $0.05/dk VAPI AI + $0.012/dk Twilio Turkey inbound = $0.062/dk
+  const costUsd = durationSeconds
+    ? parseFloat((durationSeconds / 60 * 0.062).toFixed(5))
+    : 0;
+
   const [vc] = await db
     .insert(voiceCalls)
     .values({
@@ -52,14 +61,13 @@ export async function POST(req: NextRequest) {
       externalCallId: call.id ?? null,
       phone: call.customer?.number ?? "unknown",
       direction: call.type === "outboundPhoneCall" ? "outbound" : "inbound",
-      durationSeconds: call.endedAt
-        ? Math.round((new Date(call.endedAt).getTime() - new Date(call.startedAt).getTime()) / 1000)
-        : null,
+      durationSeconds,
       transcript: call.transcript ?? null,
       summary: call.summary ?? null,
       outcome: outcome as "randevu_alindi",
       appointmentId,
       recordingUrl: call.recordingUrl ?? null,
+      costUsd,
     })
     .returning();
 
