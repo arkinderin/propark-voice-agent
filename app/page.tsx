@@ -2,6 +2,10 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PricingSection from "@/components/PricingSection";
+import DemoSection from "@/components/DemoSection";
+import ROICalculator from "@/components/ROICalculator";
+import CallExamples from "@/components/CallExamples";
+import WhatsAppFlow from "@/components/WhatsAppFlow";
 import { Phone, Calendar, BarChart2, Zap, Shield, Clock, ArrowRight, Star, MessageSquare, TrendingUp } from "lucide-react";
 
 const features = [
@@ -220,6 +224,14 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <DemoSection />
+
+      <CallExamples />
+
+      <ROICalculator />
+
+      <WhatsAppFlow />
 
       <PricingSection />
 

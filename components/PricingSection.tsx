@@ -17,21 +17,21 @@ function Tooltip({ content }: { content: string }) {
 }
 
 const SETUP_TOOLTIP =
-  "Ne içeriyor: Klinik ağzınıza özel AI eğitimi · Telefon hattı kurulumu & yönlendirme · Randevu sistemi entegrasyonu · İlk 30 gün aktif onboarding desteği · Sınırsız test araması";
+  "Kapsamı: Kliniğinize özel AI eğitimi · Telefon hattı kurulumu & yönlendirme · Randevu sistemi entegrasyonu · 30 gün aktif onboarding desteği · Sınırsız test araması";
 
-const INTERACTION_TOOLTIP =
-  "1 hasta etkileşimi = AI asistanının 1 telefon aramasını karşılaması. Çağrı süresi veya sonucundan bağımsız olarak 1 sayılır. Aşımda ek ücret uygulanır.";
+const CAPACITY_TOOLTIP =
+  "AI hasta kapasitesi: kliniğinizin aylık karşılayabileceği tahmini yeni hasta etkileşimi sayısı. Arama hacmi ve konuşma süresine göre değişir.";
 
 const USAGE_OPTIONS = [
-  { label: "0–100 arama / ay", value: "low", recommended: "baslangic" },
-  { label: "100–600 arama / ay", value: "mid", recommended: "profesyonel" },
-  { label: "600+ arama / ay", value: "high", recommended: "kurumsal" },
+  { label: "40–120 yeni hasta / ay", value: "low", recommended: "baslangic" },
+  { label: "Yüksek hacimli hasta operasyonu", value: "mid", recommended: "profesyonel" },
+  { label: "Çok şube / zincir operasyonu", value: "high", recommended: "premium" },
 ];
 
 const USAGE_HINTS: Record<string, string> = {
   low: "Solo Klinik planı ihtiyaçlarınıza uygun görünüyor.",
   mid: "Aktif Klinik planı bu hacim için en verimli seçenek.",
-  high: "Kurumsal plan veya özel teklif için ekibimizle iletişime geçin.",
+  high: "Premium Klinik veya Kurumsal plan için ekibimizle konuşun.",
 };
 
 type Feature = { text: string; tooltip?: string };
@@ -43,8 +43,7 @@ type RegularPlan = {
   monthlyPrice: number;
   yearlyPrice: number;
   setup: number;
-  interactions: number;
-  interactionsPerDay: string;
+  capacityLabel: string;
   desc: string;
   features: Feature[];
   roi: string;
@@ -70,19 +69,19 @@ const plans: Plan[] = [
     enterprise: false,
     id: "baslangic",
     name: "Solo Klinik",
-    monthlyPrice: 1990,
-    yearlyPrice: 1590,
-    setup: 3500,
-    interactions: 150,
-    interactionsPerDay: "~5 arama/gün",
-    desc: "Tek hekimli muayenehane için",
+    monthlyPrice: 7900,
+    yearlyPrice: 6590,
+    setup: 9900,
+    capacityLabel: "40–120 yeni hasta / ay",
+    desc: "İlk AI klinik danışmanınız",
     features: [
-      { text: "Ayda 150 hastayı otomatik karşıla", tooltip: INTERACTION_TOOLTIP },
+      { text: "AI çağrı karşılama & randevu alma" },
+      { text: "WhatsApp bildirimi & onay mesajı" },
+      { text: "Google Calendar entegrasyonu" },
+      { text: "Temel analitik dashboard" },
       { text: "1 AI telefon hattı" },
-      { text: "Randevu takvimi & yönetim paneli" },
-      { text: "E-posta bildirimleri" },
     ],
-    roi: "Ortalama klinik yılda 240 hasta aramasını kaçırır. Bu plan her birine otomatik yanıt verir.",
+    roi: "Ayda 20 kaçan arama → ortalama ₺12.000 kayıp. Bu plan ilk ayda kendini amorti eder.",
     highlight: false,
     cta: "14 Gün Ücretsiz Dene",
   },
@@ -90,40 +89,60 @@ const plans: Plan[] = [
     enterprise: false,
     id: "profesyonel",
     name: "Aktif Klinik",
-    monthlyPrice: 4490,
-    yearlyPrice: 3590,
-    setup: 5000,
-    interactions: 300,
-    interactionsPerDay: "~10 arama/gün",
-    desc: "Büyüyen klinikler için tam paket",
-    badge: "Kliniklerin %73'ü bu paketi seçiyor",
+    monthlyPrice: 14900,
+    yearlyPrice: 12400,
+    setup: 19900,
+    capacityLabel: "Yüksek hacimli hasta operasyonu",
+    desc: "Kaçan hastaları randevuya dönüştüren AI çalışan",
+    badge: "Estetik kliniklerin tercihi",
     features: [
-      { text: "Ayda 300 hastayı otomatik karşıla", tooltip: INTERACTION_TOOLTIP },
+      { text: "Gelişmiş AI konuşma akışı" },
+      { text: "WhatsApp follow-up & hatırlatıcı" },
+      { text: "Kaçan çağrı otomatik geri dönüşü" },
+      { text: "Lead raporlama & dönüşüm analizi" },
+      { text: "Satış odaklı konuşma senaryoları" },
       { text: "2 AI telefon hattı" },
-      { text: "WhatsApp AI takip — randevu sonrası otomatik mesaj" },
-      { text: "Gelmeme oranını %35 azalt (SMS/WA hatırlatma)" },
-      { text: "Gelişmiş analitik & dönüşüm raporu" },
-      { text: "Öncelikli destek — 4 saat yanıt garantisi" },
+      { text: "Öncelikli destek — 4 saat yanıt" },
     ],
-    roi: "Gelmeme oranını %35 azaltmak = ayda 8 ek dolu randevu. Bu plan kendini ilk 3 haftada amorti eder.",
+    roi: "Gelmeme oranını %35 azaltmak = ayda 10+ ek dolu randevu. Kendini 3 haftada amorti eder.",
     highlight: true,
     cta: "14 Gün Ücretsiz Dene",
+  },
+  {
+    enterprise: false,
+    id: "premium",
+    name: "Premium Klinik",
+    monthlyPrice: 24900,
+    yearlyPrice: 20750,
+    setup: 39900,
+    capacityLabel: "Çok şube / yüksek kapasite",
+    desc: "7/24 çalışan AI hasta operasyon sistemi",
+    features: [
+      { text: "Çoklu hat desteği & lokasyon yönetimi" },
+      { text: "Gelişmiş CRM entegrasyonu" },
+      { text: "Özel AI konuşma senaryoları" },
+      { text: "Detaylı analytics & segment raporu" },
+      { text: "Özel onboarding — dedicated uzman" },
+      { text: "SLA garantisi" },
+    ],
+    roi: "Çok şubeli kliniklerde AI, sekreter operasyon maliyetinin %60'ını düşürür.",
+    highlight: false,
+    cta: "Demo Talep Et",
   },
   {
     enterprise: true,
     id: "kurumsal",
     name: "Kurumsal",
-    desc: "Çok şubeli klinik zincirleri & hastaneler için",
+    desc: "Enterprise AI çağrı operasyon altyapısı",
     features: [
-      { text: "Özel hasta etkileşimi limiti" },
-      { text: "Sınırsız telefon hattı & lokasyon" },
-      { text: "CRM & ERP entegrasyonu" },
+      { text: "Multi-location yönetimi" },
+      { text: "Özel AI model eğitimi" },
+      { text: "ERP / CRM entegrasyonu" },
       { text: "White-label platform seçeneği" },
       { text: "Dedicated account manager" },
-      { text: "SLA garantisi" },
-      { text: "Özel AI model eğitimi" },
+      { text: "SLA & uptime garantisi" },
     ],
-    roi: "Çok şubeli kliniklerde AI, sekreter maliyetinin %60'ını düşürür.",
+    roi: "Klinik zincirlerinde AI; hat başı sekreter maliyetini tamamen elimine eder.",
     cta: "Demo Talep Et",
   },
 ];
@@ -150,7 +169,7 @@ export default function PricingSection() {
 
   return (
     <section id="fiyatlandirma" className="py-24 px-4">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
 
         {/* ROI stats bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-16">
@@ -189,11 +208,7 @@ export default function PricingSection() {
               }`}
             />
           </button>
-          <span
-            className={`text-sm font-medium transition flex items-center gap-2 ${
-              billing === "yearly" ? "text-white" : "text-slate-500"
-            }`}
-          >
+          <span className={`text-sm font-medium transition flex items-center gap-2 ${billing === "yearly" ? "text-white" : "text-slate-500"}`}>
             Yıllık
             <span className="bg-emerald-500/15 text-emerald-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-emerald-500/20">
               2 ay bedava
@@ -204,8 +219,9 @@ export default function PricingSection() {
         {/* Usage estimator */}
         <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 mb-10">
           <p className="text-sm text-slate-300 font-medium mb-3">
-            Aylık hasta araması hacminiz nedir?{" "}
-            <span className="text-slate-600 font-normal">Size uygun planı önerelim.</span>
+            AI hasta kapasitesi ihtiyacınız nedir?{" "}
+            <Tooltip content={CAPACITY_TOOLTIP} />
+            <span className="text-slate-600 font-normal ml-2">Size uygun planı önerelim.</span>
           </p>
           <div className="flex flex-col sm:flex-row gap-2">
             {USAGE_OPTIONS.map((o) => (
@@ -230,8 +246,8 @@ export default function PricingSection() {
           )}
         </div>
 
-        {/* Plan cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+        {/* Plan cards — 2+2 on md, 4 on lg */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
           {plans.map((p) => {
             const isRecommended = recommendedId === p.id;
 
@@ -239,49 +255,47 @@ export default function PricingSection() {
               return (
                 <div
                   key={p.id}
-                  className={`relative rounded-2xl p-6 border flex flex-col bg-gradient-to-b from-amber-500/5 to-transparent border-amber-500/20 ${
+                  className={`relative rounded-2xl p-5 border flex flex-col bg-gradient-to-b from-amber-500/5 to-transparent border-amber-500/20 ${
                     isRecommended ? "ring-2 ring-amber-400/40" : ""
                   }`}
                 >
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-gradient-to-r from-amber-600 to-amber-500 text-white text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap shadow-lg shadow-amber-900/30">
+                    <span className="bg-gradient-to-r from-amber-600 to-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg shadow-amber-900/30">
                       Kurumsal
                     </span>
                   </div>
 
                   <div className="mt-2 mb-4">
-                    <h3 className="font-bold text-white text-lg">{p.name}</h3>
-                    <p className="text-slate-500 text-sm mt-1">{p.desc}</p>
+                    <h3 className="font-bold text-white text-base">{p.name}</h3>
+                    <p className="text-slate-500 text-xs mt-1">{p.desc}</p>
                   </div>
 
                   <div className="mb-5">
-                    <div className="text-3xl font-black text-amber-400">Özel Teklif</div>
-                    <div className="text-xs text-slate-600 mt-1">Onboarding dahildir</div>
+                    <div className="text-2xl font-black text-amber-400">₺50.000+</div>
+                    <div className="text-xs text-slate-600 mt-0.5">/ay · Onboarding dahil</div>
                   </div>
 
-                  <ul className="space-y-2.5 mb-5 flex-1">
+                  <ul className="space-y-2 mb-5 flex-1">
                     {p.features.map((f) => (
-                      <li key={f.text} className="flex items-start gap-2.5 text-sm text-slate-300">
-                        <CheckCircle size={14} className="text-amber-400/80 shrink-0 mt-0.5" />
+                      <li key={f.text} className="flex items-start gap-2 text-xs text-slate-300">
+                        <CheckCircle size={12} className="text-amber-400/80 shrink-0 mt-0.5" />
                         <span>{f.text}</span>
                       </li>
                     ))}
                   </ul>
 
-                  <div className="bg-amber-500/8 border border-amber-500/15 rounded-xl px-3 py-2.5 mb-5 text-xs text-amber-300/80 leading-relaxed">
-                    <TrendingUp size={11} className="inline mr-1.5 text-amber-400" />
+                  <div className="bg-amber-500/8 border border-amber-500/15 rounded-xl px-3 py-2 mb-4 text-xs text-amber-300/80 leading-relaxed">
+                    <TrendingUp size={10} className="inline mr-1 text-amber-400" />
                     {p.roi}
                   </div>
 
                   <a
                     href="mailto:satis@operexo.com?subject=Kurumsal Demo Talebi"
-                    className="block text-center py-3 px-4 rounded-xl font-semibold text-sm transition bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/20"
+                    className="block text-center py-2.5 px-4 rounded-xl font-semibold text-xs transition bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/20"
                   >
                     {p.cta}
                   </a>
-                  <p className="text-center text-xs text-slate-600 mt-2">
-                    Ekibimiz 24 saat içinde ulaşır
-                  </p>
+                  <p className="text-center text-xs text-slate-600 mt-2">Ekibimiz 24 saat içinde ulaşır</p>
                 </div>
               );
             }
@@ -291,9 +305,9 @@ export default function PricingSection() {
             return (
               <div
                 key={p.id}
-                className={`relative rounded-2xl p-6 border flex flex-col transition-all ${
+                className={`relative rounded-2xl p-5 border flex flex-col transition-all ${
                   p.highlight
-                    ? "bg-gradient-to-b from-indigo-600/15 to-indigo-950/5 border-indigo-500/60 shadow-2xl shadow-indigo-900/30 md:scale-[1.03]"
+                    ? "bg-gradient-to-b from-indigo-600/15 to-indigo-950/5 border-indigo-500/60 shadow-2xl shadow-indigo-900/30 md:scale-[1.02]"
                     : isRecommended
                     ? "bg-[#0D1117] border-indigo-400/40 ring-2 ring-indigo-400/20"
                     : "bg-[#0D1117] border-white/5"
@@ -314,13 +328,13 @@ export default function PricingSection() {
                   </div>
                 )}
 
-                <div className="mt-2 mb-4">
-                  <h3 className="font-bold text-white text-lg">{p.name}</h3>
-                  <p className="text-slate-500 text-sm mt-1">{p.desc}</p>
+                <div className="mt-2 mb-3">
+                  <h3 className="font-bold text-white text-base">{p.name}</h3>
+                  <p className="text-slate-500 text-xs mt-1">{p.desc}</p>
                 </div>
 
                 <div className="mb-1 flex items-end gap-1">
-                  <span className="text-4xl font-black text-white">
+                  <span className="text-3xl font-black text-white">
                     ₺{price.toLocaleString("tr-TR")}
                   </span>
                   <span className="text-slate-500 text-sm mb-1">/ay</span>
@@ -331,28 +345,20 @@ export default function PricingSection() {
                   )}
                 </div>
 
-                <div className="text-xs text-slate-600 mb-5 flex items-center">
-                  + ₺{p.setup.toLocaleString("tr-TR")} onboarding paketi
+                <div className="text-xs text-slate-600 mb-4 flex items-center">
+                  + ₺{p.setup.toLocaleString("tr-TR")} onboarding
                   <Tooltip content={SETUP_TOOLTIP} />
                 </div>
 
-                <div className="bg-white/[0.03] border border-white/5 rounded-xl px-3 py-2.5 mb-5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-400 flex items-center">
-                      {p.interactions} hasta etkileşimi/ay
-                      <Tooltip content={INTERACTION_TOOLTIP} />
-                    </span>
-                    <span className="text-xs text-slate-600">{p.interactionsPerDay}</span>
-                  </div>
-                  <div className="text-[10px] text-slate-700 mt-1">
-                    Aşımda {p.id === "baslangic" ? "₺18" : "₺14"}/etkileşim · önceden bildirim alırsınız
-                  </div>
+                <div className="bg-white/[0.03] border border-white/5 rounded-xl px-3 py-2 mb-4 text-xs text-slate-400 flex items-center gap-1">
+                  {p.capacityLabel}
+                  <Tooltip content={CAPACITY_TOOLTIP} />
                 </div>
 
-                <ul className="space-y-2.5 mb-5 flex-1">
+                <ul className="space-y-2 mb-4 flex-1">
                   {p.features.map((f) => (
-                    <li key={f.text} className="flex items-start gap-2.5 text-sm text-slate-300">
-                      <CheckCircle size={14} className="text-emerald-400 shrink-0 mt-0.5" />
+                    <li key={f.text} className="flex items-start gap-2 text-xs text-slate-300">
+                      <CheckCircle size={12} className="text-emerald-400 shrink-0 mt-0.5" />
                       <span className="flex items-center flex-wrap gap-x-1">
                         {f.text}
                         {f.tooltip && <Tooltip content={f.tooltip} />}
@@ -362,22 +368,19 @@ export default function PricingSection() {
                 </ul>
 
                 <div
-                  className={`rounded-xl px-3 py-2.5 mb-5 text-xs leading-relaxed ${
+                  className={`rounded-xl px-3 py-2 mb-4 text-xs leading-relaxed ${
                     p.highlight
                       ? "bg-indigo-500/10 border border-indigo-500/15 text-indigo-300/90"
                       : "bg-white/[0.02] border border-white/5 text-slate-500"
                   }`}
                 >
-                  <TrendingUp
-                    size={11}
-                    className={`inline mr-1.5 ${p.highlight ? "text-indigo-400" : "text-slate-600"}`}
-                  />
+                  <TrendingUp size={10} className={`inline mr-1 ${p.highlight ? "text-indigo-400" : "text-slate-600"}`} />
                   {p.roi}
                 </div>
 
                 <Link
                   href="/kayit"
-                  className={`block text-center py-3 px-4 rounded-xl font-semibold text-sm transition ${
+                  className={`block text-center py-2.5 px-4 rounded-xl font-semibold text-xs transition ${
                     p.highlight
                       ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-900/40"
                       : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
@@ -415,12 +418,12 @@ export default function PricingSection() {
             ))}
           </div>
           <p className="text-slate-300 text-sm leading-relaxed mb-4">
-            &quot;Kurulum 1 günde bitti, ilk haftada 40&apos;tan fazla yeni randevu aldık.
-            Sekreterimiz artık sadece gelen hastalarla ilgileniyor, telefonu hiç kaldırmak zorunda kalmıyor.&quot;
+            &quot;Yaz sezonu öncesi arama hacmimiz 3 katına çıktı. Operexo olmadan altından kalkamadık.
+            Personelimiz artık sadece uygulamalara odaklanıyor.&quot;
           </p>
           <div>
-            <div className="font-semibold text-white text-sm">Uzm. Dr. Fatma Yıldız</div>
-            <div className="text-slate-500 text-xs mt-0.5">Dermatoloji, İzmir</div>
+            <div className="font-semibold text-white text-sm">Dr. Zeynep Arslan</div>
+            <div className="text-slate-500 text-xs mt-0.5">Lazer Epilasyon & Estetik Merkezi, İstanbul</div>
           </div>
         </div>
 

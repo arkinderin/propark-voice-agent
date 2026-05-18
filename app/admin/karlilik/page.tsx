@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { clinics, subscriptions, voiceCalls } from "@/lib/db/schema";
-import { eq, gte, count, sum, avg, and } from "drizzle-orm";
+import { eq, gte, lte, count, sum, avg, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { TrendingUp, TrendingDown, Minus, AlertTriangle, Phone, DollarSign, Activity, Users } from "lucide-react";
@@ -107,7 +107,7 @@ export default async function KarlilikPage() {
     .from(voiceCalls)
     .where(and(
       gte(voiceCalls.createdAt, lastMonthStart),
-      gte(lastMonthEnd, voiceCalls.createdAt),
+      lte(voiceCalls.createdAt, lastMonthEnd),
     ))
     .groupBy(voiceCalls.clinicId),
   ]);

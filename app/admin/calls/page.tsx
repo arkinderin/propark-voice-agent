@@ -43,6 +43,7 @@ export default async function CallsPage({ searchParams }: { searchParams: Promis
           outcome: voiceCalls.outcome,
           appointmentId: voiceCalls.appointmentId,
           recordingUrl: voiceCalls.recordingUrl,
+          costUsd: voiceCalls.costUsd,
           createdAt: voiceCalls.createdAt,
           patientName: appointments.patientName,
         })
