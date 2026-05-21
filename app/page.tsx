@@ -86,7 +86,7 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-32 pb-24 px-4 overflow-hidden">
+      <section className="relative pt-32 pb-16 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-indigo-950/30 to-transparent pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -120,9 +120,13 @@ export default function HomePage() {
           </div>
           <p className="text-slate-600 text-sm mt-5">Kredi kartı gerekmez · Kurulum 1 gün · İptal istediğin zaman</p>
         </div>
+      </section>
 
-        {/* Dashboard preview mockup */}
-        <div className="max-w-4xl mx-auto mt-16 relative">
+      <DemoSection />
+
+      {/* Dashboard preview mockup */}
+      <section className="pb-24 px-4">
+        <div className="max-w-4xl mx-auto relative">
           <div className="rounded-2xl border border-white/10 bg-[#0D1117] overflow-hidden shadow-2xl shadow-indigo-950/50">
             <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-[#0A0E1A]">
               <div className="w-3 h-3 rounded-full bg-rose-500/60" />
@@ -224,8 +228,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      <DemoSection />
 
       <CallExamples />
 

@@ -17,10 +17,12 @@ export default function DemoSection() {
   const [volumeLevel, setVolumeLevel] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const vapiRef = useRef<Vapi | null>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const transcriptContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (transcripts.length > 0 && transcriptContainerRef.current) {
+      transcriptContainerRef.current.scrollTop = transcriptContainerRef.current.scrollHeight;
+    }
   }, [transcripts]);
 
   // Vapi instance'ı mount'ta bir kez oluştur, unmount'ta temizle
@@ -83,7 +85,9 @@ export default function DemoSection() {
     try {
       const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID;
       if (!assistantId) throw new Error("NEXT_PUBLIC_VAPI_ASSISTANT_ID tanımlı değil");
-      await vapiRef.current!.start(assistantId);
+      await vapiRef.current!.start(assistantId, {
+        firstMessage: "Merhaba! Estetik & Güzellik Kliniği AI asistanına hoş geldiniz. Size nasıl yardımcı olabilirim?",
+      } as Parameters<typeof vapiRef.current.start>[1]);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error("VAPI start error:", msg);
@@ -233,7 +237,7 @@ export default function DemoSection() {
               <span className="text-xs text-slate-500 font-medium">Konuşma Metni</span>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div ref={transcriptContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3">
               {transcripts.length === 0 && (
                 <div className="h-full flex items-center justify-center">
                   <p className="text-slate-600 text-sm text-center leading-relaxed">
@@ -274,7 +278,6 @@ export default function DemoSection() {
                 </div>
               )}
 
-              <div ref={bottomRef} />
             </div>
           </div>
         </div>
