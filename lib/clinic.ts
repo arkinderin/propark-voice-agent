@@ -8,8 +8,14 @@ export async function getClinic() {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL tanımlı değil. Vercel → Settings → Environment Variables'a ekleyin.");
+  }
+
   const [clinic] = await db.select().from(clinics).where(eq(clinics.clerkUserId, userId));
-  if (!clinic) redirect("/sign-in");
+  if (!clinic) {
+    throw new Error(`Bu kullanıcı için klinik kaydı bulunamadı (userId: ${userId}). Veritabanına seed çalıştırmanız gerekiyor.`);
+  }
 
   return clinic;
 }

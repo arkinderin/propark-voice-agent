@@ -20,9 +20,9 @@ export default function AdminError({
         <AlertTriangle size={26} className="text-rose-400" />
       </div>
       <h2 className="text-white font-semibold text-lg mb-2">Bir hata oluştu</h2>
-      <p className="text-slate-500 text-sm max-w-sm mb-6 leading-relaxed">
+      <pre className="text-rose-400/70 text-xs bg-rose-500/5 border border-rose-500/10 rounded-xl px-4 py-3 max-w-lg w-full text-left whitespace-pre-wrap break-words mb-6">
         {error.message || "Sayfa yüklenirken beklenmeyen bir hata oluştu."}
-      </p>
+      </pre>
       <button
         onClick={reset}
         className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-sm px-4 py-2 rounded-xl transition"
