@@ -87,7 +87,7 @@ export default function DemoSection() {
       if (!assistantId) throw new Error("NEXT_PUBLIC_VAPI_ASSISTANT_ID tanımlı değil");
       await vapiRef.current!.start(assistantId, {
         firstMessage: "Merhaba! Estetik & Güzellik Kliniği AI asistanına hoş geldiniz. Size nasıl yardımcı olabilirim?",
-      } as Parameters<NonNullable<typeof vapiRef.current>["start"]>[1]);
+      } as any);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error("VAPI start error:", msg);
