@@ -86,39 +86,101 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-32 pb-16 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-indigo-950/30 to-transparent pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-1.5 text-sm text-indigo-300 mb-6">
-            <Zap size={14} />
-            <span>Medikal Estetik Klinikleri için tasarlandı</span>
+      <section className="relative pt-36 pb-28 px-4 overflow-hidden">
+        {/* Background layers */}
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-950/25 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-400/70 to-transparent" />
+        {/* Grid — fades out radially from center top */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.055)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_80%_65%_at_50%_10%,black_20%,transparent_100%)] pointer-events-none" />
+        {/* Glow orbs */}
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[1100px] h-[700px] bg-indigo-600/[0.13] rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] h-[340px] bg-indigo-500/[0.07] rounded-full blur-[90px] pointer-events-none" />
+        <div className="absolute top-2/3 left-1/5 w-[380px] h-[380px] bg-cyan-600/[0.06] rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-2/3 right-1/5 w-[380px] h-[380px] bg-violet-600/[0.06] rounded-full blur-[80px] pointer-events-none" />
+
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2.5 bg-white/[0.04] border border-white/[0.09] rounded-full px-4 py-2 text-sm text-slate-300 mb-10 backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-70" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            Medikal Estetik Klinikleri için tasarlandı
           </div>
-          <h1 className="text-5xl md:text-6xl font-black leading-tight mb-6 tracking-tight">
-            Lazer, botoks, dolgu —
-            <span className="block bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-              randevular otomatik
+
+          {/* Headline */}
+          <h1 className="text-5xl md:text-[72px] lg:text-[84px] font-black leading-[1.0] mb-7 tracking-tight">
+            <span className="text-white block">Lazer, botoks, dolgu —</span>
+            <span className="relative inline-block mt-1">
+              <span className="bg-gradient-to-r from-indigo-400 via-cyan-300 to-violet-400 bg-clip-text text-transparent">
+                randevular otomatik
+              </span>
+              <span className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/45 to-transparent" />
             </span>
           </h1>
-          <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            AI sesli asistan fiyat sorularını yönetir, ücretsiz konsültasyon randevusu alır ve seans takviminizi doldurur. Gece 02&apos;de gelen aramaları bile.
+
+          {/* Subtext */}
+          <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-11 leading-relaxed">
+            AI sesli asistan fiyat sorularını yönetir, ücretsiz konsültasyon randevusu alır ve seans takviminizi doldurur.{" "}
+            <span className="text-slate-200 font-medium">Gece 02&apos;de gelen aramaları bile.</span>
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-12">
             <Link
               href="/kayit"
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-3.5 rounded-xl transition flex items-center justify-center gap-2 text-base"
+              className="group relative inline-flex items-center justify-center"
             >
-              14 Gün Ücretsiz Dene
-              <ArrowRight size={18} />
+              <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 transition-all duration-300 group-hover:opacity-90" />
+              <span className="absolute inset-0 rounded-xl shadow-[0_8px_32px_rgba(99,102,241,0.45)] group-hover:shadow-[0_12px_48px_rgba(99,102,241,0.65)] transition-shadow duration-300" />
+              <span className="relative px-9 py-4 flex items-center gap-2 text-white font-semibold text-base">
+                14 Gün Ücretsiz Dene
+                <ArrowRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
+              </span>
             </Link>
             <Link
               href="/#nasil-calisir"
-              className="border border-white/10 text-slate-300 hover:bg-white/5 px-8 py-3.5 rounded-xl transition flex items-center justify-center gap-2 text-base"
+              className="group border border-white/10 hover:border-white/20 bg-white/[0.03] hover:bg-white/[0.06] text-slate-300 hover:text-white px-9 py-4 rounded-xl transition-all flex items-center justify-center gap-2 text-base backdrop-blur-sm"
             >
               Nasıl Çalışır?
+              <ArrowRight size={16} className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
             </Link>
           </div>
-          <p className="text-slate-600 text-sm mt-5">Kredi kartı gerekmez · Kurulum 1 gün · İptal istediğin zaman</p>
+
+          {/* Social proof + trust bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-8 text-sm">
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2">
+                <div className="w-8 h-8 rounded-full border-2 border-[#070B14] bg-indigo-500/30 flex items-center justify-center text-xs font-bold text-indigo-300">Z</div>
+                <div className="w-8 h-8 rounded-full border-2 border-[#070B14] bg-cyan-500/30 flex items-center justify-center text-xs font-bold text-cyan-300">S</div>
+                <div className="w-8 h-8 rounded-full border-2 border-[#070B14] bg-violet-500/30 flex items-center justify-center text-xs font-bold text-violet-300">D</div>
+                <div className="w-8 h-8 rounded-full border-2 border-[#070B14] bg-emerald-500/30 flex items-center justify-center text-xs font-bold text-emerald-300">M</div>
+              </div>
+              <div className="flex flex-col items-start gap-0.5">
+                <div className="flex gap-0.5">
+                  {[1,2,3,4,5].map((i) => (
+                    <Star key={i} size={11} className="text-amber-400 fill-amber-400" />
+                  ))}
+                </div>
+                <span className="text-slate-400">500+ klinik kullanıyor</span>
+              </div>
+            </div>
+            <div className="hidden sm:block h-5 w-px bg-white/[0.08]" />
+            <div className="flex items-center gap-5 sm:gap-6 text-slate-500">
+              <div className="flex items-center gap-1.5">
+                <Shield size={13} className="text-emerald-500" />
+                <span>Kredi kartı gerekmez</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Zap size={13} className="text-amber-500" />
+                <span>1 günde kurulum</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Clock size={13} className="text-indigo-400" />
+                <span>İptal istediğin zaman</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
